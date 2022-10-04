@@ -9,4 +9,4 @@ RabbitMQ server hosted in the USA, SQL Server hosted on Azure in the USA
 
 This is basically a round trip from the Local Application -> Azure MSSQL -> RabbitMQ on VPS -> Back to Local Application
 
-The purpose of this test application, is to prove that instead of Polling a database for updates, which is slow and resource intensive, we can subscribe to an asynchronous queue which receives the message as it arrives in an Event Handler or Callbak fashion.  Waiting for events consumes virtually no resources in the main local application, and the ON UPDATE trigger is much more efficient since it is fired on a Database Event and not in a polled fashion.
+The purpose of this test application is to prove that instead of polling a database for updates, which is slow and resource intensive, we can subscribe to an asynchronous queue which receives the message as it arrives in an Event Handler or Callbak fashion.  Waiting for events consumes virtually no resources in the main local application, and the ON UPDATE trigger is much more efficient since it is fired on a Database Event and not in a polled fashion.
