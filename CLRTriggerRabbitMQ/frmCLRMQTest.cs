@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SubMessage;
+using System.Net.NetworkInformation;
 
 namespace CLRTriggerRabbitMQ
 {
@@ -20,6 +21,11 @@ namespace CLRTriggerRabbitMQ
         SqlCommand cmd;
         SqlParameter sqlParameter;
         static IBus bus;
+        DateTime submitTime;
+        Ping p;
+        PingOptions po;
+        PingReply pr;
+        byte[] buffdata;
 
         public void logMessage(string msg)
         {
@@ -35,6 +41,7 @@ namespace CLRTriggerRabbitMQ
         {
             logMessage($"Updating table with '{txtMessage.Text}'");
             sqlParameter.Value = txtMessage.Text;
+            submitTime = DateTime.Now;
             cmd.ExecuteNonQuery();
             txtMessage.SelectAll();
             txtMessage.Focus();
@@ -42,7 +49,8 @@ namespace CLRTriggerRabbitMQ
 
         public void HandleTextMessage(SubTextMessage textMessage)
         {
-            Invoke(new Action(() => {logMessage($"Message from MQ: {textMessage.Text.Trim()}");}));
+            Invoke(new Action(() => { logMessage($"Message from MQ: '{textMessage.Text.Trim()}'"); }));
+            Invoke(new Action(() => { logMessage($"RTT: {new DateTime(DateTime.Now.Ticks - submitTime.Ticks).ToString("fff")}ms"); }));
         }
 
         private void frmCLRMQTest_Load(object sender, EventArgs e)
@@ -63,6 +71,21 @@ namespace CLRTriggerRabbitMQ
             bus.PubSub.Subscribe<SubTextMessage>("", HandleTextMessage, x => x.WithTopic("testqueue"));
 
             logMessage("Subscribed to queue/topic");
+
+            p = new Ping();
+            po = new PingOptions();
+            po.DontFragment = true;
+            buffdata = Encoding.ASCII.GetBytes("12345678123456781234567812345678");
+            tmrPing.Enabled = true;
+        }
+
+        private void tmrPing_Tick(object sender, EventArgs e)
+        {
+            PingReply pr = p.Send("darwinistic.com", 120, buffdata, po);
+            if (pr.Status == IPStatus.Success)
+            {
+                lblRTT.Text = pr.RoundtripTime + "ms";
+            }
         }
     }
 }

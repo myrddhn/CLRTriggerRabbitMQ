@@ -21,7 +21,7 @@ GO
 drop assembly [CLR_Triggers]
 GO
 CREATE ASSEMBLY [CLR_Triggers] FROM
-'D:\TFS\Andi\Projects\CLRTriggerRabbitMQ\TriggerCLRMQConnector\bin\Debug\TriggerCLRMQConnector.dll' WITH PERMISSION_SET=UNSAFE
+'C:\Andi\Assemblies\TriggerCLRMQConnector.dll' WITH PERMISSION_SET=UNSAFE
 GO
 CREATE TRIGGER TR_TriggerMQTest
 ON dbo.QueueData
